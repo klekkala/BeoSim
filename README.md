@@ -1,1 +1,1 @@
-# BeoSim
+# BeoSim robo_gym
