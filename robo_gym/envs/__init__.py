@@ -15,3 +15,7 @@ from robo_gym.envs.ur.ur_waypoint import WayPointSim, WayPointRobot
 
 # Beosim
 from robo_gym.envs.beoarm.beoarm_ee_positioning import BeoarmEEPosition
+from robo_gym.envs.beoarm.beoarm_test_block import BeoarmTestBlock
+
+# Test
+from robo_gym.envs.ur.ur_block_test import BlockTestURSim, BlockTestURRob
