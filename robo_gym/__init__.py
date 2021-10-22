@@ -96,3 +96,12 @@ register(
     entry_point='robo_gym.envs:BeoarmEEPosition',
 )
 
+register(
+    id='BeoarmTestBlock-v0',
+    entry_point='robo_gym.envs:BeoarmTestBlock',
+)
+# Test
+register(
+    id='BlockTest-v0',
+    entry_point='robo_gym.envs:BlockTestURSim',
+)
