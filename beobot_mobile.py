@@ -27,7 +27,7 @@ class BeobotMobile(gym.Env, Simulation):
         self.elapsed_steps = 0
         self.max_episode_steps = 300
         self.abs_joint_pos_range = [6.28] * 4
-        self.twist_linear_range = 5
+        self.twist_linear_range = 0.5
         self.twist_angular_range = 5
 
         # state contains joint positions and base diff_drive twist.linear.x and twist.angular.z scaled to [-1, 1]
@@ -64,7 +64,7 @@ class BeobotMobile(gym.Env, Simulation):
         new_state_dict = self.client.get_state_msg().state_dict
         self._check_state_dict_keys(new_state_dict)
         normalized_joint_positions = self._normalize_joint_positions([new_state_dict[j+'_position'] for j in joint_names])
-        normalized_base_twist = self._normalize_base_twist(new_state_dict['base_twist_lin_x'], new_state_dict['base_twist_ang_z'])
+        normalized_base_twist = self._normalize_base_twist([new_state_dict['base_twist_lin_x'], new_state_dict['base_twist_ang_z']])
         normalized_action = normalized_joint_positions + normalized_base_twist
         self._check_valid_action(normalized_action)
         self.state = normalized_action
@@ -94,7 +94,7 @@ class BeobotMobile(gym.Env, Simulation):
         joint_positions_normalized = self._normalize_joint_positions(joint_positions)
 
         # FIXME
-        delta = np.abs(np.subtract(joint_positions_normalized, action))
+        # delta = np.abs(np.subtract(joint_positions_normalized, action[:len(joint_names)]))
         # reward = reward - (0.05 * np.sum(delta))
 
         if euclidean_dist_3d <= DISTANCE_THRESHOLD:
@@ -139,7 +139,7 @@ class BeobotMobile(gym.Env, Simulation):
 
         self._check_state_dict_keys(new_state_dict)
         normalized_joint_positions = self._normalize_joint_positions([new_state_dict[j+'_position'] for j in joint_names])
-        normalized_base_twist = self._normalize_base_twist(new_state_dict['base_twist_lin_x'], new_state_dict['base_twist_ang_z'])
+        normalized_base_twist = self._normalize_base_twist([new_state_dict['base_twist_lin_x'], new_state_dict['base_twist_ang_z']])
         normalized_action = normalized_joint_positions + normalized_base_twist
         self._check_valid_action(normalized_action)
 
@@ -166,9 +166,9 @@ class BeobotMobile(gym.Env, Simulation):
     scale action from [-1, 1] to [min_joint_position, max_joint_position]
     '''
     def _scale_action(self, action):
-        assert len(action) == (len(self.joint_names) + 2)
-        return [a*r for a,r in zip(action[:len(self.joint_names)], self.abs_joint_pos_range)] + \
-                [action[len(self.joint_names)]*self.twist_linear_range, action[len(self.joint_names)+1]*self.twist_linear_range]
+        assert len(action) == (len(joint_names) + 2)
+        return [a*r for a,r in zip(action[:len(joint_names)], self.abs_joint_pos_range)] + \
+                [action[len(joint_names)]*self.twist_linear_range, action[len(joint_names)+1]*self.twist_linear_range]
 
     '''
     scale from [min_joint_position, max_joint_position] to [-1, 1]

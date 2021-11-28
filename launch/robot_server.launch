@@ -5,7 +5,6 @@
   <arg name="world_path" default="$(find BeobotV3_robot_server)/worlds"/>
   <arg name="world_name" default="test.world"/>
   <arg name="server_port" default="50051"/>
-  <arg name="object_model_names" default="[box100]"/>
   <arg name="action_cycle_rate" default="20"/>
 
   <param name="action_cycle_rate" value="$(arg action_cycle_rate)"/>
@@ -20,13 +19,6 @@
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
     <rosparam param="source_list">[/joint_states]</rosparam>
-  </node>
-
-  <!-- Publish target objects TF -->
-  <rosparam param="object_model_names" subst_value="True">$(arg object_model_names)</rosparam>
-  <node name="tf_manager" pkg="BeobotV3_robot_server" type="tf_manager.py">
-    <!-- update every 100ms -->
-    <param name="update_rate" value="1"></param>
   </node>
 
   <!-- Launches Rviz if needed -->

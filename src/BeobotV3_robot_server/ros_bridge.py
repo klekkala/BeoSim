@@ -5,14 +5,15 @@ import rospy
 import rospkg
 import tf2_ros
 import numpy as np
+from retry import retry
 from threading import Event
 from std_msgs.msg import Int32MultiArray, Header, Bool
-from geometry_msgs.msg import Pose, Point, Quaternion, Twist, Vector3
+from geometry_msgs.msg import Pose, Point, Quaternion, Twist, Vector3, TransformStamped
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import JointState
 from controller_manager_msgs.srv import SwitchController, LoadController
-from gazebo_msgs.msg import ContactsState, ModelState
-from gazebo_msgs.srv import DeleteModel, SpawnModel
+from gazebo_msgs.msg import ContactsState, ModelState, ModelStates
+from gazebo_msgs.srv import DeleteModel, SpawnModel, SetModelState
 from trajectory_msgs.msg import JointTrajectoryPoint, JointTrajectory
 from robo_gym_server_modules.robot_server.grpc_msgs.python import robot_server_pb2
 from tf.transformations import euler_from_quaternion
@@ -57,7 +58,7 @@ state_dict should look like this:
 robot_model_name = 'robot'
 rospack = rospkg.RosPack()
 robot_urdf_path = rospack.get_path('BeobotV3_arm') + '/urdf/BeobotV3_arm.urdf'
-robot_spawn_position = [0, 0, 0.04]
+robot_spawn_position = [0, 0, 0.084]
 object_sdf_path = rospack.get_path('BeobotV3_robot_server') + '/models/box100/box100.sdf'
 manipulator_group_name = 'arm'
 manipulator_ctrlr_name = 'arm_controller'
@@ -92,11 +93,27 @@ class RosBridge:
         self.reference_frame = 'world'
         self.base_frame = 'base_link'
         self.ee_frame = 'hand_tip'
-        self.object_frames = rospy.get_param('object_model_names')
+        self.object_frames = ['box100']
+
+        self.object_0_pose = {
+            'object_0_to_ref_translation_x': 0.0,
+            'object_0_to_ref_translation_y': 0.0,
+            'object_0_to_ref_translation_z': 0.0,
+            'object_0_to_ref_rotation_x': 0.0,
+            'object_0_to_ref_rotation_y': 0.0,
+            'object_0_to_ref_rotation_z': 0.0,
+            'object_0_to_ref_rotation_w': 0.0
+        }
+        rospy.Subscriber('/gazebo/model_states', ModelStates, self._update_object_pose)
+
+        # Service proxy for setting target object states
+        rospy.wait_for_service('/gazebo/set_model_state')
+        self.set_state_proxy = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
 
         # TF2
         self.tf2_buffer = tf2_ros.Buffer()
         self.tf2_listener = tf2_ros.TransformListener(self.tf2_buffer)
+        self.tf2_broadcaster = tf2_ros.TransformBroadcaster()
 
         # Collision detection
         # FIXME: restart every _reset_robot_object?
@@ -139,12 +156,10 @@ class RosBridge:
                 ee_to_ref_trans = self.tf2_buffer.lookup_transform(self.reference_frame, self.ee_frame, rospy.Time(0))
                 state_dict.update(self._get_transform_dict(ee_to_ref_trans, 'ee_to_ref'))
 
-                # FIXME: The pose information of ONLY 1 object (might expand to support more objects in the future)
-                object_0_trans = self.tf2_buffer.lookup_transform(self.reference_frame, self.object_frames[0], rospy.Time(0))
-                state_dict.update(self._get_transform_dict(object_0_trans, 'object_0_to_ref'))
+                state_dict.update(self.object_0_pose)
 
                 tf_lookup_succeeded = True
-            except tf2_ros.LookupException:
+            except (tf2_ros.LookupException, tf2_ros.ExtrapolationException):
                 rospy.logwarn('TF lookup failed, retrying...')
                 rospy.sleep(1)
         if not tf_lookup_succeeded:
@@ -178,10 +193,7 @@ class RosBridge:
             object_0_x = state_msg.float_params['object_0_x']
             object_0_y = state_msg.float_params['object_0_y']
             object_0_z = state_msg.float_params['object_0_z']
-            self._delete_model(self.object_frames[0])
-            rospy.sleep(1)
-            self._respawn_model(self.object_frames[0], object_sdf_path, [object_0_x, object_0_y, object_0_z])
-            rospy.sleep(1)
+            reset_obj_result = self._set_object_position(self.object_frames[0], [object_0_x, object_0_y, object_0_z])
         except KeyError:
             rospy.logwarn('No object_0 reset position given, skipping...')
 
@@ -189,18 +201,9 @@ class RosBridge:
         rospy.sleep(1)
         spawn_result = self._respawn_model(robot_model_name, robot_urdf_path, robot_spawn_position)
         rospy.sleep(1)
-        rospy.loginfo('reset_robot_object::loading %s...', manipulator_ctrlr_name)
-        rospy.wait_for_service('/controller_manager/load_controller')
-        arm_ctrlr_load_proxy = rospy.ServiceProxy('/controller_manager/load_controller', LoadController, persistent=False)
-        arm_ctrlr_load_result = arm_ctrlr_load_proxy(name=manipulator_ctrlr_name)
-        rospy.loginfo('reset_robot_object::loading %s...', base_ctrlr_name)
-        rospy.wait_for_service('/controller_manager/load_controller')
-        base_ctrlr_load_proxy = rospy.ServiceProxy('/controller_manager/load_controller', LoadController, persistent=False)
-        base_ctrlr_load_result = base_ctrlr_load_proxy(name=base_ctrlr_name)
-        rospy.loginfo('reset_robot_object::loading joint_state_controller...')
-        rospy.wait_for_service('/controller_manager/load_controller')
-        jts_ctrlr_load_proxy = rospy.ServiceProxy('/controller_manager/load_controller', LoadController, persistent=False)
-        jts_ctrlr_load_result = jts_ctrlr_load_proxy(name='joint_state_controller')
+        base_ctrlr_load_result = self._load_base_ctrl()
+        arm_ctrlr_load_result = self._load_arm_ctrl()
+        jst_ctrlr_load_result = self._load_jst()
         rospy.sleep(1)
 
         rospy.loginfo('reset_robot_object::activating controllers...')
@@ -226,11 +229,12 @@ class RosBridge:
         self.reset.set()
         self.action_cycle_rate.sleep()
 
-        if delete_result.success and \
-           spawn_result.success and \
-           arm_ctrlr_load_result.ok and \
-           base_ctrlr_load_result.ok and \
-           jts_ctrlr_load_proxy.ok and \
+        if reset_obj_result and \
+           delete_result and \
+           spawn_result and \
+           arm_ctrlr_load_result and \
+           base_ctrlr_load_result and \
+           jst_ctrlr_load_result and \
            controller_on_result.ok:
             return 1
         else:
@@ -241,7 +245,7 @@ class RosBridge:
     action_cmd should look like this:
         ['arm_joint_1_pos', 'arm_joint_2_pos', 'arm_joint_3_pos', 'hand_joint_pos', 'base_twist_linear_x', 'base_twist_angular_z']
     '''
-    def base_and_arm_action(action_cmd, guarantee=False):
+    def base_and_arm_action(self, action_cmd, guarantee=False):
         assert len(action_cmd) == (len(self.joint_names) + 2)
         joint_positions = action_cmd[:len(self.joint_names)]
         base_twist = action_cmd[len(self.joint_names):]
@@ -296,14 +300,84 @@ class RosBridge:
         msg.angular = Vector3(x=0, y=0, z=twist_cmd[1])
         self.base_cmd_pub.publish(msg)
 
+    @retry(delay=1, tries=5)
+    def _set_object_position(self, model, new_position):
+        rospy.loginfo('setting object position for %s...', model)
+        rospy.wait_for_service('/gazebo/set_model_state')
+        state_msg = ModelState()
+        state_msg.model_name = model
+
+        state_msg.pose.position.x = new_position[0]
+        state_msg.pose.position.y = new_position[1]
+        state_msg.pose.position.z = new_position[2]
+        state_msg.pose.orientation.w = 0
+        state_msg.pose.orientation.x = 0
+        state_msg.pose.orientation.y = 0
+        state_msg.pose.orientation.z = 1
+
+        result = self.set_state_proxy(state_msg).success
+        if not result:
+            raise Exception
+        return result
+
+
+    def _update_object_pose(self, model_states):
+        for object_name in self.object_frames:
+            try:
+                object_index = model_states.name.index(object_name)
+                object_pose = model_states.pose[object_index]
+                self.object_0_pose['object_0_to_ref_translation_x'] = object_pose.position.x
+                self.object_0_pose['object_0_to_ref_translation_y'] = object_pose.position.y
+                self.object_0_pose['object_0_to_ref_translation_z'] = object_pose.position.z
+                self.object_0_pose['object_0_to_ref_rotation_x'] = object_pose.orientation.x
+                self.object_0_pose['object_0_to_ref_rotation_y'] = object_pose.orientation.y
+                self.object_0_pose['object_0_to_ref_rotation_z'] = object_pose.orientation.z
+                self.object_0_pose['object_0_to_ref_rotation_w'] = object_pose.orientation.w
+            except ValueError:
+                rospy.logerr('Object %s not found in /gazebo/model_states', object_name)
+
+    @retry(delay=1, tries=5)
     def _delete_model(self, model):
         rospy.loginfo('deleting %s...', model)
         rospy.wait_for_service('/gazebo/delete_model')
         # ServiceProxy gets closed after the first call when persistent=False, so no need to close()
         delete_proxy = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel, persistent=False)
-        delete_result = delete_proxy(model_name=robot_model_name)
-        return delete_result
+        result = delete_proxy(model_name=model).success
+        if not result:
+            raise Exception
+        return result
 
+    @retry(delay=1, tries=5)
+    def _load_base_ctrl(self):
+        rospy.loginfo('loading %s...', base_ctrlr_name)
+        rospy.wait_for_service('/controller_manager/load_controller')
+        base_ctrlr_load_proxy = rospy.ServiceProxy('/controller_manager/load_controller', LoadController, persistent=False)
+        result = base_ctrlr_load_proxy(name=base_ctrlr_name).ok
+        if not result:
+            raise Exception
+        return result
+
+    @retry(delay=1, tries=5)
+    def _load_arm_ctrl(self):
+        rospy.loginfo('loading %s...', manipulator_ctrlr_name)
+        rospy.wait_for_service('/controller_manager/load_controller')
+        arm_ctrlr_load_proxy = rospy.ServiceProxy('/controller_manager/load_controller', LoadController, persistent=False)
+        result = arm_ctrlr_load_proxy(name=manipulator_ctrlr_name).ok
+        if not result:
+            raise Exception
+        return result
+
+    @retry(delay=1, tries=5)
+    def _load_jst(self):
+        rospy.loginfo('loading joint_state_controller...')
+        rospy.wait_for_service('/controller_manager/load_controller')
+        jts_ctrlr_load_proxy = rospy.ServiceProxy('/controller_manager/load_controller', LoadController, persistent=False)
+        result = jts_ctrlr_load_proxy(name='joint_state_controller').ok
+        if not result:
+            raise Exception
+        return result
+
+    @retry(delay=1, tries=5)
     def _respawn_model(self, model, path, spawn_position, use_sdf=False):
         assert len(spawn_position) == 3
         rospy.loginfo('respawning %s...', model)
@@ -314,18 +388,20 @@ class RosBridge:
         else:
             rospy.wait_for_service('/gazebo/spawn_urdf_model')
             spawn_proxy = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel, persistent=False)
-        spawn_result = spawn_proxy(model_name=model,
-                                    model_xml=open(path,'r').read(),
-                                    initial_pose=Pose(
-                                        position=Point(
-                                            spawn_position[0],
-                                            spawn_position[1],
-                                            spawn_position[2]
-                                        ),
-                                        orientation=Quaternion(0,0,0,1)
-                                    ),
-                                    reference_frame='world')
-        return spawn_result
+        result = spawn_proxy(model_name=model,
+                            model_xml=open(path,'r').read(),
+                            initial_pose=Pose(
+                                position=Point(
+                                    spawn_position[0],
+                                    spawn_position[1],
+                                    spawn_position[2]
+                                ),
+                                orientation=Quaternion(0,0,0,1)
+                            ),
+                            reference_frame=self.reference_frame).success
+        if not result:
+            raise Exception
+        return result
 
     def _on_joint_states(self, msg):
         if self.get_state_event.is_set():

@@ -12,7 +12,6 @@ env.reset(target_object_position=[0.2]*3)
 while True:
     state, reward, _, info = env.step([0,0,0.5,0.5,1,1])
     print('joint positions: {}'.format(state[:4]))
-    print('base twist: {}'.format(state[4:]))
 
     state_dict = info['state_dict']
 
