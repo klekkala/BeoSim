@@ -68,7 +68,6 @@ wayPoints = np.array([
 		[0.174, 0, 0.58],
 		[-0.174, 0, 0.677]
 		])
-env.reset(startingPosition)
 env = MoveEffectorToWayPoints(env, wayPoints, 'ee_to_ref_translation', distanceThreshold=0.04)
 done = False
 while not done:
