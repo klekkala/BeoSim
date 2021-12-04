@@ -72,6 +72,12 @@ class MoveEffectorToWayPoints(gym.Wrapper):
             return 1
         return -0.01
 
+    def reset(self, **kwargs):
+    	self.goalReached = False
+    	self.reachCount = 0
+    	self.reachedWayPoints = [False] * len(self.wayPoints)
+    	return self.env.reset(**kwargs)
+
 class MoveObjectToTargetTask(gym.Wrapper):
     """
     Add environment a goal that an object must be moved to the target position by all means.
@@ -128,6 +134,10 @@ class MoveObjectToTargetTask(gym.Wrapper):
         if self.goalReached:
             return 1
         return -0.01
+
+    def reset(self, **kwargs):
+    	self.goalReached = False
+    	return self.env.reset(**kwargs)
 
 
     
