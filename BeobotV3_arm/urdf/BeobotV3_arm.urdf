@@ -1,0 +1,803 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com)
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot name="BeobotV3_arm">
+    <link name="dummy_link" />
+
+    <joint name="base_joint" type="fixed">
+        <parent link="dummy_link"/>
+        <child link="base_link"/>
+    </joint>
+
+    <link name="base_link">
+        <inertial>
+            <origin xyz="-0.0513796483314814 1.27686246397941E-05 0.154161121120295" rpy="0 0 0" />
+            <mass value="12.4988329835437" />
+            <inertia
+              ixx="0.190447730971708"
+              ixy="-3.70126486766833E-19"
+              ixz="-3.56567450144756E-06"
+              iyy="0.0959949202608751"
+              iyz="-4.42207493744835E-18"
+              izz="0.279604557022315" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/base_link.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/base_link.STL" />
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="Caster">
+        <inertial>
+            <origin xyz="-1.03705565233938E-08 0.00204796069316782 -0.0181187425534225" rpy="0 0 0" />
+            <mass value="0.0611311091677911" />
+            <inertia
+              ixx="7.0957616596077E-05"
+              ixy="-4.91476686853458E-12"
+              ixz="5.15091026246723E-13"
+              iyy="3.74419469168325E-05"
+              iyz="-2.74890550626252E-05"
+              izz="6.96806050757074E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Caster.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Caster.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="Caster Joint" type="continuous">
+        <origin xyz="-0.2489 0 0" rpy="1.5708 0 1.5708" />
+        <parent link="base_link" />
+        <child link="Caster" />
+        <axis xyz="0 1 0" />
+    </joint>
+
+    <link name="Caster Wheel">
+        <inertial>
+            <origin xyz="-1.95818296572367E-18 1.38777878078145E-17 2.77555756156289E-17" rpy="0 0 0" />
+            <mass value="0.122723274685531" />
+            <inertia
+              ixx="8.9933192980841E-05"
+              ixy="7.96184638024659E-22"
+              ixz="-1.11135394881533E-37"
+              iyy="5.21169087044883E-05"
+              iyz="4.30690035800385E-38"
+              izz="5.21169087044883E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Caster Wheel.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Caster Wheel.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="CWheel Joint" type="continuous">
+        <origin xyz="0 -0.049142 -0.047513" rpy="3.1416 0 0" />
+        <parent link="Caster" />
+        <child link="Caster Wheel" />
+        <axis xyz="1 0 0" />
+    </joint>
+
+    <link name="left_wheel">
+        <inertial>
+            <origin xyz="0 0 0.025" rpy="0 0 0" />
+            <mass value="0.963877503284561" />
+            <inertia
+              ixx="0.00173116001505925"
+              ixy="9.09442722940398E-37"
+              ixz="7.05860789378559E-22"
+              iyy="0.00173116001505925"
+              iyz="7.62310521474892E-37"
+              izz="0.00310961165234764" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/left_wheel.STL" />
+                <!-- <cylinder radius="0.84" length="0.05"/> -->
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/left_wheel.STL" />
+                <!-- <cylinder radius="0.84" length="0.05"/> -->
+            </geometry>
+        </collision>
+    </link>
+    <joint name="left_wheel_joint" type="continuous">
+        <origin xyz="0 0.23535 0" rpy="1.5707963267949 0 3.14159265358979" />
+        <parent link="base_link" />
+        <child link="left_wheel" />
+        <axis xyz="0 0 1" />
+    </joint>
+
+    <link name="right_wheel">
+        <inertial>
+            <origin xyz="0 1.38777878078145E-17 -0.025" rpy="0 0 0" />
+            <mass value="0.963877503284561" />
+            <inertia
+              ixx="0.00173116001505925"
+              ixy="-5.14894137640762E-36"
+              ixz="-1.30593527677662E-21"
+              iyy="0.00173116001505925"
+              iyz="5.86567729539708E-36"
+              izz="0.00310961165234764" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/right_wheel.STL" />
+                <!-- <cylinder radius="0.84" length="0.05"/> -->
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/right_wheel.STL" />
+                <!-- <cylinder radius="0.84" length="0.05"/> -->
+            </geometry>
+        </collision>
+    </link>
+    <joint name="right_wheel_joint" type="continuous">
+        <origin xyz="0 -0.23535 0" rpy="1.5707963267949 0 3.14159265358979" />
+        <parent link="base_link" />
+        <child link="right_wheel" />
+        <axis xyz="0 0 1" />
+    </joint>
+
+    <link name="Velodine">
+        <inertial>
+            <origin xyz="-0.0300853928488499 -0.40091478715411 4.60923484674456E-05" rpy="0 0 0" />
+            <mass value="15.9569652334539" />
+            <inertia
+              ixx="0.838303568674409"
+              ixy="-0.0931515890792136"
+              ixz="-7.72771481615878E-05"
+              iyy="0.598322340884611"
+              iyz="-0.000188634938311251"
+              izz="0.793423845349092" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Velodine.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Velodine.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="Velodine_joint" type="fixed">
+        <origin xyz="-0.0889 0 0.5403395" rpy="1.5707963267949 0 3.14159265358979" />
+        <parent link="base_link" />
+        <child link="Velodine" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="Hokuyo">
+        <inertial>
+            <origin xyz="9.62077651549171E-13 -0.0104575797147916 1.47756675626387E-05" rpy="0 0 0" />
+            <mass value="0.485765672289228" />
+            <inertia
+              ixx="0.000181662528040023"
+              ixy="-9.18790800976449E-15"
+              ixz="-3.66339139346828E-18"
+              iyy="0.000256014886917181"
+              iyz="3.3495514268039E-07"
+              izz="0.000181671483298989" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Hokuyo.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.109803921568627 0.109803921568627 0.109803921568627 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/Hokuyo.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="Hokuyo_joint" type="fixed">
+        <origin xyz="0.1162 0 0.0993875000000001" rpy="1.5707963267949 0 1.5707963267949" />
+        <parent link="base_link" />
+        <child link="Hokuyo" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="realsense_1">
+        <inertial>
+            <origin xyz="-0.000390708978352982 6.02138510601979E-05 -0.00789836129246299" rpy="0 0 0" />
+            <mass value="0.0640757405654074" />
+            <inertia
+              ixx="4.56933951019137E-06"
+              ixy="1.96370246605674E-08"
+              ixz="-1.9640169802707E-08"
+              iyy="5.78325356057845E-05"
+              iyz="-2.70197585396388E-08"
+              izz="6.11005211694262E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense_1.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense_1.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="realsense_1_joint" type="fixed">
+        <origin xyz="0.0422600000000009 -0.0099999999999999 0.5213395" rpy="1.5707963267949 0 1.5707963267949" />
+        <parent link="base_link" />
+        <child link="realsense_1" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="realsense_2">
+        <inertial>
+            <origin xyz="-0.0003907344707152 6.02169244577899E-05 -0.00789832167406296" rpy="0 0 0" />
+            <mass value="0.0640758147362888" />
+            <inertia
+              ixx="4.56937172192639E-06"
+              ixy="1.96411832233332E-08"
+              ixz="-1.96258693886165E-08"
+              iyy="5.78324705416839E-05"
+              iyz="-2.70181362166153E-08"
+              izz="6.11004884271043E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense_2.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense_2.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="realsense_2_joint" type="fixed">
+        <origin xyz="-0.0388587658548304 0.121650402733524 0.5213395" rpy="1.5707963267949 0 2.82743338823082" />
+        <parent link="base_link" />
+        <child link="realsense_2" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="realsense-3">
+        <inertial>
+            <origin xyz="-0.000390717782523815 6.02095974349126E-05 -0.00789830234133593" rpy="0 0 0" />
+            <mass value="0.0640759792887907" />
+            <inertia
+              ixx="4.56937429841234E-06"
+              ixy="1.96531921961022E-08"
+              ixz="-1.96245893701832E-08"
+              iyy="5.7832525771276E-05"
+              iyz="-2.701548927337E-08"
+              izz="6.11005581941919E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense-3.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense-3.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="realsense_3_joint" type="fixed">
+        <origin xyz="-0.189132816459295 0.0851840836344303 0.5213395" rpy="1.5707963267949 0 -2.19911485751285" />
+        <parent link="base_link" />
+        <child link="realsense-3" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="realsense-4">
+        <inertial>
+            <origin xyz="-0.000390718620082456 6.02087439376398E-05 -0.00789831183155529" rpy="0 0 0" />
+            <mass value="0.064075960036" />
+            <inertia
+              ixx="4.56937200247722E-06"
+              ixy="1.96511360305826E-08"
+              ixz="-1.96313922469088E-08"
+              iyy="5.78325239716603E-05"
+              iyz="-2.70153308879261E-08"
+              izz="6.11005586640684E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense-4.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense-4.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="realsense_4_joint" type="fixed">
+        <origin xyz="-0.200888521505143 -0.0690037437469328 0.5213395" rpy="1.5707963267949 0 -0.942477796076929" />
+        <parent link="base_link" />
+        <child link="realsense-4" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="realsense-5">
+        <inertial>
+            <origin xyz="-0.00039071868084831 6.02163207615303E-05 -0.00789836156069645" rpy="0 0 0" />
+            <mass value="0.0640758098551959" />
+            <inertia
+              ixx="4.56937014056801E-06"
+              ixy="1.96404239093606E-08"
+              ixz="-1.96329288000106E-08"
+              iyy="5.78325275505255E-05"
+              iyz="-2.70155088637995E-08"
+              izz="6.11005476079255E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense-5.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/realsense-5.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="realsense_5_joint" type="fixed">
+        <origin xyz="-0.0578798961807318 -0.127830742621022 0.5213395" rpy="1.5707963267949 0 0.314159265358991" />
+        <parent link="base_link" />
+        <child link="realsense-5" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="arm_base">
+        <inertial>
+            <origin xyz="0.000546883601580506 -0.000676404986259573 -1.5573062355025E-18" rpy="0 0 0" />
+            <mass value="0.323605809581169" />
+            <inertia
+              ixx="0.000161147613159255"
+              ixy="8.44321479741356E-06"
+              ixz="1.69584286759297E-21"
+              iyy="0.000418295360654488"
+              iyz="1.47396249426902E-21"
+              izz="0.000450631135476571" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_base.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_base.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="arm_base_joint" type="fixed">
+        <origin xyz="-0.46908 0 0.1007725" rpy="-1.5707963267949 0 3.14159265358979" />
+        <parent link="base_link" />
+        <child link="arm_base" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <link name="arm_link_1">
+        <inertial>
+            <origin xyz="1.47728109962052E-17 -0.019 -0.0227815027756187" rpy="0 0 0" />
+            <mass value="0.0178646986447077" />
+            <inertia
+              ixx="3.44196286692544E-05"
+              ixy="-2.32644547280539E-22"
+              ixz="5.19287322199649E-21"
+              iyy="3.24160176753155E-05"
+              iyz="2.39613298606533E-21"
+              izz="5.52910048182246E-06" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_link_1.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_link_1.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="arm_joint_1" type="continuous">
+        <origin xyz="0.03912 -0.055925 0" rpy="0 1.5707963267949 0" />
+        <parent link="arm_base" />
+        <child link="arm_link_1" />
+        <axis xyz="0 1 0" />
+        <dynamics damping="0.5" friction="0.0"/>
+    </joint>
+
+    <link name="arm_link_2">
+        <inertial>
+            <origin xyz="-0.121 -0.0307964899121853 -1.11022302462516E-16" rpy="0 0 0" />
+            <mass value="0.0649301185542533" />
+            <inertia
+              ixx="3.22586635547296E-05"
+              ixy="-2.47234192565917E-19"
+              ixz="-6.92449434380391E-20"
+              iyy="0.000476962065829218"
+              iyz="-1.21028203335921E-20"
+              izz="0.000507342791034516" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_link_2.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_link_2.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="arm_joint_2" type="continuous">
+        <origin xyz="0 -0.019 0" rpy="0 -0.109072359195873 1.5707963267949" />
+        <parent link="arm_link_1" />
+        <child link="arm_link_2" />
+        <axis xyz="0 1 0" />
+        <dynamics damping="0.5" friction="0.0"/>
+    </joint>
+
+    <link name="arm_link_3">
+        <inertial>
+            <origin xyz="1.65844061205124E-17 0 -0.14258" rpy="0 0 0" />
+            <mass value="0.0575915155354546" />
+            <inertia
+              ixx="8.87747106609759E-05"
+              ixy="4.55303185773157E-21"
+              ixz="2.6323171148936E-21"
+              iyy="8.44653798915301E-05"
+              iyz="6.26804380968182E-20"
+              izz="1.22592484459501E-05" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_link_3.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/arm_link_3.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="arm_joint_3" type="continuous">
+        <origin xyz="-0.242 0 0" rpy="1.86868906869276 0 -1.5707963267949" />
+        <parent link="arm_link_2" />
+        <child link="arm_link_3" />
+        <axis xyz="1 0 0" />
+        <dynamics damping="0.5" friction="0.0"/>
+    </joint>
+
+    <link name="hand">
+        <inertial>
+            <origin xyz="-0.136178264835158 -0.0169303769012779 -0.0186384219718446" rpy="0 0 0" />
+            <mass value="0.07638618840621" />
+            <inertia
+              ixx="7.13119994044157E-05"
+              ixy="-0.00012051566228187"
+              ixz="3.87785049449802E-05"
+              iyy="0.000543690574797547"
+              iyz="6.36829910880985E-06"
+              izz="0.00056893703526882" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/hand.STL" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://BeobotV3_arm/meshes/hand.STL" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="hand_joint" type="continuous">
+        <origin xyz="0 0 -0.28516" rpy="-1.5707963267949 0.812050775618667 -1.5707963267949" />
+        <parent link="arm_link_3" />
+        <child link="hand" />
+        <axis xyz="0 0 1" />
+        <dynamics damping="0.5" friction="0.0"/>
+    </joint>
+
+    <link name="hand_tip">
+        <!-- FIXME: dummy mass and collision added to not get ignored by gazebo and moveit -->
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.001" />
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0.45" />
+            <geometry>
+                <box size="0.001 0.001 0.001" />
+            </geometry>
+            <material name="">
+                <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0.45" />
+            <geometry>
+                <box size="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <joint name="hand_tip_joint" type="fixed">
+        <origin xyz="-0.25 -0.06 -0.01" rpy="0 0 0" />
+        <parent link="hand" />
+        <child link="hand_tip" />
+        <axis xyz="0 0 0" />
+    </joint>
+
+    <transmission name="trans_left_wheel_joint">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="left_wheel_joint">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="left_wheel_joint_motor">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+    <transmission name="trans_right_wheel_joint">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="right_wheel_joint">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="right_wheel_joint_motor">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+    <transmission name="trans_arm_joint_1">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="arm_joint_1">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="arm_joint_1_motor">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+    <transmission name="trans_arm_joint_2">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="arm_joint_2">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="arm_joint_2_motor">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+    <transmission name="trans_arm_joint_3">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="arm_joint_3">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="arm_joint_3_motor">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+    <transmission name="trans_hand_joint">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="hand_joint">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="hand_joint_motor">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <gazebo reference="base_link">
+        <sensor name='base_link_contact' type='contact'>
+            <update_rate> 50 </update_rate>
+            <always_on>true</always_on>
+            <contact>
+                <collision>dummy_link_fixed_joint_lump__base_link_collision</collision>
+            </contact>
+            <plugin name="ros_bumper_0" filename="libgazebo_ros_bumper.so">
+                <bumperTopicName>base_link_collision</bumperTopicName>
+                <frameName>base_link</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="arm_link_1">
+        <sensor name='arm_link_1_contact' type='contact'>
+            <update_rate> 50 </update_rate>
+            <always_on>true</always_on>
+            <contact>
+                <collision>arm_link_1_collision</collision>
+            </contact>
+            <plugin name="ros_bumper_0" filename="libgazebo_ros_bumper.so">
+                <bumperTopicName>arm_link1_collision</bumperTopicName>
+                <frameName>arm_link_1</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="arm_link_2">
+        <sensor name='arm_link_2_contact' type='contact'>
+            <update_rate> 50 </update_rate>
+            <always_on>true</always_on>
+            <contact>
+                <collision>arm_link_2_collision</collision>
+            </contact>
+            <plugin name="ros_bumper_1" filename="libgazebo_ros_bumper.so">
+                <bumperTopicName>arm_link2_collision</bumperTopicName>
+                <frameName>arm_link_2</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="arm_link_3">
+        <sensor name='arm_link_3_contact' type='contact'>
+            <update_rate> 50 </update_rate>
+            <always_on>true</always_on>
+            <contact>
+                <collision>arm_link_3_collision</collision>
+            </contact>
+            <plugin name="ros_bumper_2" filename="libgazebo_ros_bumper.so">
+                <bumperTopicName>arm_link3_collision</bumperTopicName>
+                <frameName>arm_link_3</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="hand">
+        <sensor name='hand_contact' type='contact'>
+            <update_rate> 50 </update_rate>
+            <always_on>true</always_on>
+            <contact>
+                <collision>hand_collision</collision>
+            </contact>
+            <plugin name="ros_bumper_3" filename="libgazebo_ros_bumper.so">
+                <bumperTopicName>hand_collision</bumperTopicName>
+                <frameName>hand</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <!-- FIXME: bumper sensor for base_link; currently not implemented because of caster wheel -->
+
+    <!-- base_link includes caster wheel, so should have no friction -->
+    <gazebo reference="base_link">
+        <mu1 value="0.0"/>
+        <mu2 value="0.0"/>
+        <kp value="10000000.0" />
+        <kd value="1.0" />
+        <fdir1 value="1 0 0"/>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="left_wheel">
+        <mu1 value="1.0"/>
+        <mu2 value="1.0"/>
+        <kp value="10000000.0" />
+        <kd value="1.0" />
+        <fdir1 value="1 0 0"/>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="right_wheel">
+        <mu1 value="1.0"/>
+        <mu2 value="1.0"/>
+        <kp value="10000000.0" />
+        <kd value="1.0" />
+        <fdir1 value="1 0 0"/>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+</robot>

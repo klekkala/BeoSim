@@ -1,0 +1,6 @@
+gazebo_ros_control/pid_gains:
+    arm_joint_1: {p: 10000.0, d: 0.0, i: 0.0, i_clamp: 0.0, i_clamp_min: 0.0, i_clamp_max: 0.0}
+    arm_joint_2: {p: 10000.0, d: 0.0, i: 0.0, i_clamp: 0.0, i_clamp_min: 0.0, i_clamp_max: 0.0}
+    arm_joint_3: {p: 10000.0, d: 0.0, i: 0.0, i_clamp: 0.0, i_clamp_min: 0.0, i_clamp_max: 0.0}
+    hand_joint:  {p: 10000.0, d: 0.0, i: 0.0, i_clamp: 0.0, i_clamp_min: 0.0, i_clamp_max: 0.0}
+
